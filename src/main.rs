@@ -4,15 +4,23 @@ use web_view::Content;
 const HTML: &'static str = r#"
 <html>
     <body>
-        <h1>test</h1>
+        <h2 id="heading">Testing. This window should close after 5 seconds.</h2>
         <script type="text/javascript">
-            external.invoke("exit");
+            // sleep time expects milliseconds
+            function sleep (time) {
+            return new Promise((resolve) => setTimeout(resolve, time));
+            }
+
+            window.onload = async function exit_after_sleep() {
+                await sleep(5000);
+                external.invoke("exit");
+            }
         </script>
     </body>
 </html>
 "#;
 fn main() {
-    web_view::builder()
+    let _result = web_view::builder()
         .title("test")
         .user_data(())
         .content(Content::Html(HTML))
@@ -28,6 +36,6 @@ fn main() {
         })
         .run().unwrap();
 
-    println!("Sleeping... Window hasn't closed!");
-    thread::sleep(Duration::from_millis(5000));
+    println!("Sleeping... Window hasn't closed??");
+    thread::sleep(Duration::from_millis(10000));
 }
